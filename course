@@ -47,6 +47,20 @@ weightmedian <- function(directory, day)  {
 }
 
 
+directory<-getwd()
+pollutantmean <- function(directory, pollutant, id = 1:332) {
+files_list <- list.files(directory,full.names=TRUE)
+dat <- data.frame()  
+for (i in id) {               
+                dat <- rbind(dat, read.csv(files_list[i]))
+        }
+if (pollutant=="sulfate" ){
+print(mean(as.numeric(dat$sulfate), na.rm=TRUE))
+}
+if (pollutant=="nitrate" ){
+print(mean(as.numeric(dat$nitrate), na.rm=TRUE))
+}
 
+}
 
 
