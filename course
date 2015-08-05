@@ -1,0 +1,52 @@
+> x <- c(3, 5, 1, 10, 12, 6) 
+> x[x %in% 1:5] <- 0
+> x
+[1]  0  0  0 10 12  6
+
+
+dataset_url <- "http://s3.amazonaws.com/practice_assignment/diet_data.zip"#https has some problem
+download.file(dataset_url, "diet_data.zip")
+unzip("diet_data.zip", exdir = "diet_data")
+length(andy$Day)
+dim(andy)
+
+ unzip("rprog-data-quiz1_data.zip")
+
+
+l<-read.csv(list.files(getwd())[4])
+
+
+ names(l)
+ head(l)
+ tail(l)
+ str(l)
+ 
+ l[47,]#full row
+ l[47,]['Ozone']#single row column value
+ andy[1, "Weight"]
+ 
+ sum(is.na(l$Ozone))#no. of missing values
+ mean(l$Ozone, na.rm='TRUE')
+ 
+l[which(l$Ozone>31&l$Temp>90),]
+subset(l,Ozone>31&Temp>90,select=Solar.R)
+summary(subset(l,Ozone>31&Temp>90,select=Solar.R))
+
+ 
+
+weightmedian <- function(directory, day)  {
+        files_list <- list.files(directory, full.names=TRUE)   #creates a list of files
+        dat <- data.frame()                             #creates an empty data frame
+        for (i in 1:5) {                                
+                #loops through the files, rbinding them together 
+                dat <- rbind(dat, read.csv(files_list[i]))
+        }
+        dat_subset <- dat[which(dat[, "Day"] == day),]  #subsets the rows that match the 'day' argument
+        median(dat_subset[, "Weight"], na.rm=TRUE)      #identifies the median weight 
+                                                        #while stripping out the NAs
+}
+
+
+
+
+
