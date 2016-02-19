@@ -1,0 +1,98 @@
+
+eBayTrain = read.csv("eBayiPadTrain.csv", stringsAsFactors=FALSE)
+eBayTrain$condition=as.factor(eBayTrain$condition)
+eBayTrain$cellular=as.factor(eBayTrain$cellular)
+eBayTrain$carrier=as.factor(eBayTrain$carrier)
+eBayTrain$color=as.factor(eBayTrain$color)
+eBayTrain$productline[eBayTrain$productline=="iPad mini Retina"]="iPad mini 2"
+
+
+eBayTest = read.csv("eBayiPadTest.csv", stringsAsFactors=FALSE)
+eBayTest$condition=as.factor(eBayTest$condition)
+eBayTest$cellular=as.factor(eBayTest$cellular)
+eBayTest$carrier=as.factor(eBayTest$carrier)
+eBayTest$color=as.factor(eBayTest$color)
+eBayTest$productline[eBayTest$productline=="iPad mini Retina"]="iPad mini 2"
+
+
+eBayTrain[grepl("ipad 2" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad 2"
+eBayTest[grepl("ipad 2" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad 2"
+
+
+eBayTrain[grepl("ipad 1" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad 1"
+eBayTest[grepl("ipad 1" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad 1"
+
+
+eBayTrain[grepl("ipad 3" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad 3"
+eBayTest[grepl("ipad 3" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad 3"
+
+
+eBayTrain[grepl("ipad 4" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad 4"
+eBayTest[grepl("ipad 4" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad 4"
+
+
+eBayTrain[grepl("ipad 5" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad 5"
+eBayTest[grepl("ipad 5" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad 5"
+
+
+eBayTrain[grepl("ipad air 2" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad Air 2"
+eBayTest[grepl("ipad air 2" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad Air 2"
+
+eBayTrain[grepl("ipad mini 2" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad mini 2"
+eBayTest[grepl("ipad mini 2" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad mini 2"
+
+
+eBayTrain[grepl("ipad mini 3" ,tolower(eBayTrain$description)) & eBayTrain$productline=="Unknown",9]="iPad mini 3"
+eBayTest[grepl("ipad mini 3" ,tolower(eBayTest$description)) & eBayTest$productline=="Unknown",9]="iPad mini 3"
+
+eBayTrain[grepl("32" ,tolower(eBayTrain$description)) & eBayTrain$storage=="Unknown",8]="32"
+eBayTest[grepl("32" ,tolower(eBayTest$description)) & eBayTest$storage=="Unknown",8]="32"
+
+
+eBayTrain[grepl("64" ,tolower(eBayTrain$description)) & eBayTrain$storage=="Unknown",8]="64"
+eBayTest[grepl("64" ,tolower(eBayTest$description)) & eBayTest$storage=="Unknown",8]="64"
+
+
+eBayTrain[grepl("16" ,tolower(eBayTrain$description)) & eBayTrain$storage=="Unknown",8]="16"
+eBayTest[grepl("16" ,tolower(eBayTest$description)) & eBayTest$storage=="Unknown",8]="16"
+
+
+eBayTrain[grepl("128" ,tolower(eBayTrain$description)) & eBayTrain$storage=="Unknown",8]="128"
+
+eBayTest[grepl("128" ,tolower(eBayTest$description)) & eBayTest$storage=="Unknown",8]="128"
+eBayTrain$productline=as.factor(eBayTrain$productline)
+eBayTrain$storage=as.factor(eBayTrain$storage)
+eBayTest$productline=as.factor(eBayTest$productline)
+eBayTest$storage=as.factor(eBayTest$storage)
+
+library(randomForest)
+set.seed(123)
+
+RF = rpart(sold ~ ., data=eBayTrain)
+
+# Make predictions:
+predictRF = predict(RF, newdata=eBayTest)
+
+
+
+
+
+
+SimpleMod = glm(sold ~ biddable+startprice+condition+storage+productline , data=eBayTrain, family="binomial")
+
+# And then make predictions on the test set:
+
+PredTest = predict(SimpleMod, newdata=eBayTest, type="response")
+
+# We can't compute the accuracy or AUC on the test set ourselves, since we don't have the dependent variable on the test set (you can compute it on the training set though!). 
+# However, you can submit the file on Kaggle to see how well the model performs. You can make up to 5 submissions per day, so don't hesitate to just upload a solution to see how you did.
+
+# Let's prepare a submission file for Kaggle (for more about this, see the "Evaluation" page on the competition site):
+
+MySubmission = data.frame(UniqueID = eBayTest$UniqueID, Probability1 = PredTest)
+
+write.csv(MySubmission, "SubmissionSimpleLog.csv", row.names=FALSE)
+
+# You should upload the submission "SubmissionSimpleLog.csv" on the Kaggle website to use this as a submission to the competition
+
+# This model was just designed to help you get started - to do well in the competition, you will need to build better models!
