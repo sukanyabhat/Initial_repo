@@ -1,0 +1,16 @@
+df_train<-read.csv("Train_Fresh_Train.csv")
+df_train$datetime <-strptime(as.character(df_train$datetime), "%Y-%m-%d %H:%M:%S" )
+df<-read.csv("FINAL.csv")
+df$datetime <-strptime(as.character(df$datetime), "%m/%d/%Y %H:%M:%S" )
+df_train$datetime=as.character(df_train$datetime)
+df$datetime=as.character(df$datetime)
+data_combined <- full_join(df,df_train,by= c("datetime","casual","registered"))
+data_combined=arrange(data_combined,as.Date(datetime))
+data_combined<-data_combined[,1:3]
+ts <- seq.POSIXt(as.POSIXlt("2011-01-01 00:00:00"), as.POSIXlt("2012-12-31 11:00:00"), by="hour")
+ts<- data.frame(datetime=ts)
+ts$datetime<- as.character(ts$datetime)
+data <- right_join(data_combined,ts, by="datetime" )
+data$casual[is.na(data$casual)] <- 0
+data$registered[is.na(data$registered)] <- 0
+write.csv(data, file = "Final_output.csv")
