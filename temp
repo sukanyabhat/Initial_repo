@@ -1,0 +1,26 @@
+dat=fread("businesses.tsv",sep='\t')
+dat$NAICS=substr(dat$V2,1,2)
+dat$NAICS=as.numeric(dat$NAICS)
+dat$NAICS[(dat$NAICS==99)]=NA
+zip_state=fread("zip_to_state.csv",sep=',')
+zip_demo=fread("zip_demographics.txt",sep='\t')
+dat$NAICS=as.factor(dat$NAICS)
+numbers=grepl("^[[:digit:]]+$", dat$V3)
+dat$V3[numbers==FALSE]
+dat$V3=as.factor(dat$V3)
+numbers_2=grepl("^[[:digit:]]+$", zip_state$Zipcode)
+zip_state$Zipcode[numbers_2==FALSE]
+numbers_3=grepl("^[[:digit:]]+$", zip_demo$Zip)
+zip_demo$Zip[numbers_3==FALSE]
+dat$ZIP[numbers==FALSE]=NA
+dat$ZIP[numbers==TRUE]=dat$V3
+dat$ZIP=str_pad(dat$ZIP,5,"0",side="left")
+dat$ZIP=as.factor(dat$ZIP)
+new_data_set=subset(dat,(is.na(ZIP)==FALSE) & (is.na(NAICS)==FALSE), select=c(V1,NAICS,ZIP))
+
+Q2=unique(subset(dat,is.na(NAICS)==FALSE,select = c(V1,NAICS)))
+
+
+zip_state$Zipcode=as.factor(zip_state$Zipcode)
+zip_state$Zipcode=str_pad(zip_state$Zipcode,5,"0",side="left")
+merge(zip_state,new_data_set,by.x="Zipcode",by.y="ZIP",all.y=TRUE)
