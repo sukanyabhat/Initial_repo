@@ -1,0 +1,10 @@
+grp2=unique(subset(anomalies,select = c(report_region_1,report_region_2,product_category_id)))
+date2=unique(anomalies$orderdate)
+
+i=1
+for(i in 1:nrow(grp2))
+{
+  dat=subset(godaddy,(godaddy$orderdate<=date2)  & (godaddy$report_region_1==grp[i,1]) & (godaddy$report_region_2 == grp[i,2]) & (godaddy$product_category_id==grp[i,3]),select = c(gcr))
+
+  cbind(ts(dat),lag(ts(dat),1),lag(ts(dat),2),lag(ts(dat),3),lag(ts(dat),4),lag(ts(dat),5))
+}
